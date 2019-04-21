@@ -1,4 +1,4 @@
-class UsersController < ApplicationController
+ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :is_user_logged_in?
 
@@ -25,7 +25,8 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    #complete this method
+    @user = User.create(user_params)
+    before_action :require_verification
   end
 
   # PATCH/PUT /users/1
@@ -49,5 +50,15 @@ class UsersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
       params.require(:user).permit(:name, :last_name, :email, :password, :phone)
+    end
+
+    def require_verification
+      if @user.save
+      flash[:notice] = @user.name + 'has been created'
+      redirect_to users_path
+      else
+      flash[:error] = "Ha ingresado los datos incorrectamente"
+      render :new
+      end
     end
 end
